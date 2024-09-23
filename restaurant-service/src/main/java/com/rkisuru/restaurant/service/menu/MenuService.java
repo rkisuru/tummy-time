@@ -38,11 +38,11 @@ public class MenuService {
 
         if (!request.name().isBlank()) {
             menu.setName(request.name());
-            return menuRepository.save(menu);
+            menuRepository.save(menu);
         }
         if (!request.description().isBlank()) {
             menu.setDescription(request.description());
-            return menuRepository.save(menu);
+            menuRepository.save(menu);
         }
         return menuRepository.save(menu);
     }
