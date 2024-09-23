@@ -9,6 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/menus")
 @RequiredArgsConstructor
+@CrossOrigin
 public class MenuController {
 
     private final MenuService menuService;
