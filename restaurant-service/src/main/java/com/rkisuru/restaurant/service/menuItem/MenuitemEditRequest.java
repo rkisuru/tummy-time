@@ -1,12 +1,12 @@
 package com.rkisuru.restaurant.service.menuItem;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public record MenuitemEditRequest(
 
         String name,
-        String description,
-        BigDecimal price,
-        String category
+        List<String> consistOf,
+        BigDecimal price
 ) {
 }
