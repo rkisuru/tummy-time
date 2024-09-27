@@ -1,6 +1,7 @@
 package com.rkisuru.restaurant.service.menu;
 
 import com.rkisuru.restaurant.service.menuItem.MenuItem;
+import com.rkisuru.restaurant.service.type.MenuType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +21,14 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
     private String cover;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private MenuType type;
 
     @OneToMany(mappedBy = "menu")
     private List<MenuItem> menuItems;
