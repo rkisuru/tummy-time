@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+@SuppressWarnings("JpaAttributeTypeInspection")
 @Entity
 @Data
 @AllArgsConstructor
@@ -21,10 +23,14 @@ public class MenuItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
-    private String description;
+
+    private List<String> consistOf;
+
+    @Column(nullable = false)
     private BigDecimal price;
-    private String category;
+
     private String image;
 
     @ManyToOne
