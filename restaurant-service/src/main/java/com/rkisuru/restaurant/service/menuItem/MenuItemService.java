@@ -1,12 +1,15 @@
 package com.rkisuru.restaurant.service.menuItem;
 
+import com.rkisuru.restaurant.service.file.ImageUploadService;
 import com.rkisuru.restaurant.service.mapper.Mapper;
 import com.rkisuru.restaurant.service.menu.Menu;
 import com.rkisuru.restaurant.service.menu.MenuRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -16,6 +19,7 @@ public class MenuItemService {
     private final MenuItemRepository repository;
     private final MenuRepository menuRepository;
     private final Mapper mapper;
+    private final ImageUploadService imageUploadService;
 
     public List<MenuItem> findAllByMenuId(Long menuId) {
 
@@ -48,11 +52,8 @@ public class MenuItemService {
             if (!request.name().isBlank()){
                 item.setName(request.name());
             }
-            if (!request.description().isBlank()){
-                item.setDescription(request.description());
-            }
-            if (!request.category().isBlank()) {
-                item.setCategory(request.category());
+            if (!request.consistOf().isEmpty()){
+                item.setConsistOf(request.consistOf());
             }
             if (request.price() != null) {
                 item.setPrice(request.price());
@@ -67,5 +68,13 @@ public class MenuItemService {
 
         repository.deleteById(itemId);
         return "Item deleted Successfully";
+    }
+
+    public void uploadMenuItemImage(Long menuItemId, MultipartFile file) throws IOException {
+        MenuItem menuItem = repository.findById(menuItemId)
+                .orElseThrow(() -> new EntityNotFoundException("MenuItem not found"));
+        var menuItemCover = imageUploadService.uploadImage(file);
+        menuItem.setImage(menuItemCover);
+        repository.save(menuItem);
     }
 }

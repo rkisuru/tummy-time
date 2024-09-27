@@ -1,10 +1,13 @@
 package com.rkisuru.restaurant.service.menu;
 
+import com.rkisuru.restaurant.service.file.ImageUploadService;
 import com.rkisuru.restaurant.service.mapper.Mapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -13,6 +16,7 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final Mapper mapper;
+    private final ImageUploadService imageUploadService;
 
     public List<Menu> findAll() {
 
@@ -44,6 +48,7 @@ public class MenuService {
             menu.setDescription(request.description());
             menuRepository.save(menu);
         }
+        menu.setType(request.type());
         return menuRepository.save(menu);
     }
 
@@ -51,5 +56,13 @@ public class MenuService {
 
         menuRepository.deleteById(menuId);
         return "Menu deleted Successfully";
+    }
+
+    public void uploadMenuCover(Long menuId, MultipartFile file) throws IOException {
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(() -> new EntityNotFoundException("Menu not found"));
+            var menuCover = imageUploadService.uploadImage(file);
+            menu.setCover(menuCover);
+            menuRepository.save(menu);
     }
 }

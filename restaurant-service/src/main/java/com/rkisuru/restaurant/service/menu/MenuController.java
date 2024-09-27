@@ -1,9 +1,12 @@
 package com.rkisuru.restaurant.service.menu;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,7 +30,7 @@ public class MenuController {
     }
 
     @PostMapping
-    public ResponseEntity<Menu> createMenu(@RequestBody MenuRequest request) {
+    public ResponseEntity<Menu> createMenu(@Valid @RequestBody MenuRequest request) {
 
         return ResponseEntity.ok(menuService.createMenu(request));
     }
@@ -42,6 +45,13 @@ public class MenuController {
     public ResponseEntity<String> deleteMenu(@PathVariable Long menuId) {
 
         return ResponseEntity.ok(menuService.deleteMenu(menuId));
+    }
+
+    @PostMapping(value = "/{menuId}/cover", consumes = "multipart/form-data")
+    public ResponseEntity<Menu> uploadCover(@PathVariable Long menuId, @RequestParam("file") MultipartFile file) throws IOException {
+
+        menuService.uploadMenuCover(menuId, file);
+        return ResponseEntity.ok().build();
     }
 
 }

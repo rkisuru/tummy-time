@@ -1,9 +1,13 @@
 package com.rkisuru.restaurant.service.menuItem;
 
+import com.rkisuru.restaurant.service.menu.Menu;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,7 +25,7 @@ public class MenuItemController {
     }
 
     @PostMapping("/{menuId}/items")
-    public ResponseEntity<MenuItem> createMenuItem(@PathVariable Long menuId, @RequestBody MenuItemRequest request) {
+    public ResponseEntity<MenuItem> createMenuItem(@Valid @PathVariable Long menuId, @RequestBody MenuItemRequest request) {
 
         return ResponseEntity.ok(menuItemService.createMenuItem(menuId, request));
     }
@@ -39,8 +43,16 @@ public class MenuItemController {
     }
 
     @DeleteMapping("/{menuId}/items/{itemId}")
-    public ResponseEntity<String> deleteItem(@PathVariable Long menuId, @PathVariable Long itemId) {
+    public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {
 
         return ResponseEntity.ok(menuItemService.deleteItem(itemId));
     }
+
+    @PostMapping(value = "/{menuId}/items/{itemId}/cover", consumes = "multipart/form-data")
+    public ResponseEntity<Menu> uploadImage(@PathVariable Long itemId, @RequestParam("file") MultipartFile file) throws IOException {
+
+        menuItemService.uploadMenuItemImage(itemId, file);
+        return ResponseEntity.ok().build();
+    }
+
 }
