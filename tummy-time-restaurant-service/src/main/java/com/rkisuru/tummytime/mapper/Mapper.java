@@ -4,9 +4,7 @@ import com.rkisuru.tummytime.file.ReadFile;
 import com.rkisuru.tummytime.menu.Menu;
 import com.rkisuru.tummytime.menu.MenuRequest;
 import com.rkisuru.tummytime.menu.MenuResponse;
-import com.rkisuru.tummytime.menuItem.MenuItem;
-import com.rkisuru.tummytime.menuItem.MenuItemRequest;
-import com.rkisuru.tummytime.menuItem.MenuItemResponse;
+import com.rkisuru.tummytime.menuItem.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,5 +48,15 @@ public class Mapper {
                 .consistOf(menuItem.getConsistOf())
                 .price(menuItem.getPrice())
                 .build();
+    }
+
+    public PurchaseResponse toPurchaseResponse(MenuItem item) {
+
+        return new PurchaseResponse(
+                item.getId(),
+                item.getName(),
+                item.getPrice(),
+                item.getConsistOf()
+        );
     }
 }
