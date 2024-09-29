@@ -8,4 +8,4 @@ eureka:
       defaultZone: http://localhost/${server.port}/eureka/
 
 server:
-  port: 8091
+  port: 8761
