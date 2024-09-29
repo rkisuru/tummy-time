@@ -33,6 +33,8 @@ public class MenuItem {
 
     private String image;
 
+    private boolean isAvailable;
+
     @ManyToOne
     @JoinColumn(name = "menu_id")
     @JsonIgnore
