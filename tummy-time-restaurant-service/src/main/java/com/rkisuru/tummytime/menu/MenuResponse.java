@@ -1,7 +1,6 @@
 package com.rkisuru.tummytime.menu;
 
 import com.rkisuru.tummytime.menuItem.MenuItem;
-import com.rkisuru.tummytime.type.MenuType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +18,6 @@ public class MenuResponse {
     private String menuName;
     private byte[] cover;
     private String description;
-    private MenuType type;
+    private String type;
     private List<MenuItem> menuItems;
 }

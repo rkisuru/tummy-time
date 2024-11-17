@@ -1,6 +1,5 @@
 package com.rkisuru.tummytime.menu;
 
-import com.rkisuru.tummytime.type.MenuType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -16,6 +15,6 @@ public record MenuRequest(
         @NotNull(message = "Description cannot be null")
         String description,
 
-        MenuType type
+        String type
 ) {
 }
