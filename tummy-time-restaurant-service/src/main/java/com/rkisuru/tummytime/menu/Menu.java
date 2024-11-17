@@ -1,7 +1,6 @@
 package com.rkisuru.tummytime.menu;
 
 import com.rkisuru.tummytime.menuItem.MenuItem;
-import com.rkisuru.tummytime.type.MenuType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +26,8 @@ public class Menu {
     private String cover;
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private MenuType type;
+    private String type;
+    private String userId;
 
     @OneToMany(mappedBy = "menu")
     private List<MenuItem> menuItems;

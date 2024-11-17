@@ -25,9 +25,9 @@ public class MenuItemController {
     }
 
     @PostMapping("/{menuId}/items")
-    public ResponseEntity<MenuItem> createMenuItem(@Valid @PathVariable Long menuId, @RequestBody MenuItemRequest request) {
+    public ResponseEntity<MenuItem> createMenuItem(@Valid @PathVariable Long menuId, @RequestBody MenuItemRequest request, String userId) {
 
-        return ResponseEntity.ok(menuItemService.createMenuItem(menuId, request));
+        return ResponseEntity.ok(menuItemService.createMenuItem(menuId, request, userId));
     }
 
     @GetMapping("/{menuId}/items/{itemId}")
@@ -36,23 +36,26 @@ public class MenuItemController {
         return ResponseEntity.ok(menuItemService.findById(menuId, itemId));
     }
 
-    @PutMapping("/{menuId}/items/{itemId}")
-    public ResponseEntity<MenuItem> updateMenuItem(@RequestBody MenuitemEditRequest request, @PathVariable Long menuId, @PathVariable Long itemId) {
+    @PutMapping("/{menuId}/items")
+    public ResponseEntity<MenuItem> updateMenuItem(@RequestBody MenuitemEditRequest request, @PathVariable Long menuId, @RequestParam Long itemId, String userId) {
 
-        return ResponseEntity.ok(menuItemService.updateMenuItem(request, menuId, itemId));
+        return ResponseEntity.ok(menuItemService.updateMenuItem(request, menuId, itemId, userId));
     }
 
-    @DeleteMapping("/{menuId}/items/{itemId}")
-    public ResponseEntity<String> deleteItem(@PathVariable Long itemId) {
+    @DeleteMapping("/{menuId}/items")
+    public ResponseEntity<String> deleteItem(@PathVariable Long menuId, @RequestParam Long itemId) {
 
-        return ResponseEntity.ok(menuItemService.deleteItem(itemId));
+            menuItemService.deleteItem(itemId);
+            return ResponseEntity.ok("Item deleted successfully");
     }
 
-    @PostMapping(value = "/{menuId}/items/{itemId}/cover", consumes = "multipart/form-data")
-    public ResponseEntity<Menu> uploadImage(@PathVariable Long itemId, @RequestParam("file") MultipartFile file) throws IOException {
+    @PostMapping(value = "/{menuId}/items", consumes = "multipart/form-data")
+    public ResponseEntity<Menu> uploadImage(@PathVariable Long menuId, @RequestParam("file") MultipartFile file, @RequestParam Long itemId) throws IOException {
 
         menuItemService.uploadMenuItemImage(itemId, file);
         return ResponseEntity.ok().build();
     }
+
+
 
 }

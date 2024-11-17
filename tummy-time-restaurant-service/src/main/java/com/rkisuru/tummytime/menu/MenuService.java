@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +30,29 @@ public class MenuService {
                 .orElseThrow(()-> new EntityNotFoundException("Menu not found"));
     }
 
-    public Menu createMenu(MenuRequest request) {
+    public List<MenuResponse> findByUserId(String userId) {
+
+        return menuRepository.findByUserId(userId)
+                .stream()
+                .map(mapper::toMenuResponse)
+                .toList();
+    }
+
+    public Menu createMenu(MenuRequest request, String userId) {
 
         Menu menu = mapper.toMenu(request);
+        menu.setUserId(userId);
         return menuRepository.save(menu);
     }
 
-    public Menu updateMenu(MenuEditRequest request, Long menuId) {
+    public Menu updateMenu(MenuEditRequest request, Long menuId, String userId) {
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found"));
+
+        if(!Objects.equals(menu.getUserId(), userId)) {
+            throw new RuntimeException("You are not authorized to update this menu");
+        }
 
         if (!request.name().isBlank()) {
             menu.setName(request.name());
@@ -52,15 +66,16 @@ public class MenuService {
         return menuRepository.save(menu);
     }
 
-    public String deleteMenu(Long menuId) {
-
+    public void deleteMenu(Long menuId) {
         menuRepository.deleteById(menuId);
-        return "Menu deleted Successfully";
     }
 
-    public void uploadMenuCover(Long menuId, MultipartFile file) throws IOException {
+    public void uploadMenuCover(Long menuId, MultipartFile file, String userId) throws IOException {
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found"));
+        if (!Objects.equals(menu.getUserId(), userId)) {
+            throw new RuntimeException("You are not authorized to update this menu");
+        }
             var menuCover = imageUploadService.uploadImage(file);
             menu.setCover(menuCover);
             menuRepository.save(menu);

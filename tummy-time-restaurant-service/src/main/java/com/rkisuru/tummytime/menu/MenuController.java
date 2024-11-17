@@ -29,28 +29,34 @@ public class MenuController {
         return ResponseEntity.ok(menuService.findById(menuId));
     }
 
-    @PostMapping
-    public ResponseEntity<Menu> createMenu(@Valid @RequestBody MenuRequest request) {
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<MenuResponse>> getMenusByUserId(@PathVariable String userId) {
 
-        return ResponseEntity.ok(menuService.createMenu(request));
+        return ResponseEntity.ok(menuService.findByUserId(userId));
+    }
+
+    @PostMapping
+    public ResponseEntity<Menu> createMenu(@Valid @RequestBody MenuRequest request, String userId) {
+
+        return ResponseEntity.ok(menuService.createMenu(request, userId));
     }
 
     @PutMapping("/{menuId}")
-    public ResponseEntity<Menu> updateMenu(@RequestBody MenuEditRequest request, @PathVariable Long menuId) {
+    public ResponseEntity<Menu> updateMenu(@RequestBody MenuEditRequest request, @PathVariable Long menuId, String userId) {
 
-        return ResponseEntity.ok(menuService.updateMenu(request, menuId));
+        return ResponseEntity.ok(menuService.updateMenu(request, menuId, userId));
     }
 
     @DeleteMapping("/{menuId}")
-    public ResponseEntity<String> deleteMenu(@PathVariable Long menuId) {
-
-        return ResponseEntity.ok(menuService.deleteMenu(menuId));
+    public ResponseEntity<Void> deleteMenu(@PathVariable Long menuId) {
+            menuService.deleteMenu(menuId);
+            return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/{menuId}/cover", consumes = "multipart/form-data")
-    public ResponseEntity<Menu> uploadCover(@PathVariable Long menuId, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Menu> uploadCover(@PathVariable Long menuId, @RequestParam("file") MultipartFile file, String userId) throws IOException {
 
-        menuService.uploadMenuCover(menuId, file);
+        menuService.uploadMenuCover(menuId, file, userId);
         return ResponseEntity.ok().build();
     }
 

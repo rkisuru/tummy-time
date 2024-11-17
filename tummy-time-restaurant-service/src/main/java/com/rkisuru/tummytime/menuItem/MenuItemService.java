@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +30,14 @@ public class MenuItemService {
         return menu.getMenuItems();
     }
 
-    public MenuItem createMenuItem(Long menuId, MenuItemRequest request) {
+    public MenuItem createMenuItem(Long menuId, MenuItemRequest request, String userId) {
 
         Menu menu = menuRepository.findById(menuId)
                 .orElseThrow(() -> new EntityNotFoundException("Menu not found"));
+
+        if (!Objects.equals(menu.getUserId(), userId)) {
+            throw new RuntimeException("You are not allowed to add items to this menu");
+        }
 
         MenuItem menuItem = mapper.toMenuItem(request);
         menuItem.setMenu(menu);
@@ -45,29 +50,32 @@ public class MenuItemService {
         return repository.findMenuItemByMenuId(menuId, itemId);
     }
 
-    public MenuItem updateMenuItem(MenuitemEditRequest request, Long menuId, Long itemId) {
+    public MenuItem updateMenuItem(MenuitemEditRequest request, Long menuId, Long itemId, String userId) {
 
         MenuItem item = repository.findMenuItemByMenuId(menuId, itemId);
-        if (item != null) {
-            if (!request.name().isBlank()){
-                item.setName(request.name());
-            }
-            if (!request.consistOf().isEmpty()){
-                item.setConsistOf(request.consistOf());
-            }
-            if (request.price() != null) {
-                item.setPrice(request.price());
-            }
-            return repository.save(item);
-        } else {
+
+        if (item == null) {
             throw new EntityNotFoundException("Item not found");
         }
+
+        if (!Objects.equals(item.getMenu().getUserId(), userId)) {
+            throw new RuntimeException("You are not allowed to update items in this menu");
+        }
+
+        if (!request.name().isBlank()) {
+            item.setName(request.name());
+        }
+        if (!request.consistOf().isEmpty()){
+            item.setConsistOf(request.consistOf());
+        }
+        if (request.price() != null) {
+            item.setPrice(request.price());
+        }
+        return repository.save(item);
     }
 
-    public String deleteItem(Long itemId) {
-
+    public void deleteItem(Long itemId) {
         repository.deleteById(itemId);
-        return "Item deleted Successfully";
     }
 
     public void uploadMenuItemImage(Long menuItemId, MultipartFile file) throws IOException {
@@ -76,5 +84,25 @@ public class MenuItemService {
         var menuItemCover = imageUploadService.uploadImage(file);
         menuItem.setImage(menuItemCover);
         repository.save(menuItem);
+    }
+
+    public Long triggerAvailable(Long itemId, String userId) {
+
+        MenuItem item = repository.findById(itemId)
+                .orElseThrow(() -> new EntityNotFoundException("Item not found"));
+
+        if(!Objects.equals(item.getMenu().getUserId(), userId)) {
+            throw new RuntimeException("You are not allowed to update items in this menu");
+        }
+
+        if (!item.isAvailable()) {
+            item.setAvailable(true);
+            repository.save(item);
+        }
+        else {
+            item.setAvailable(false);
+            repository.save(item);
+        }
+        return item.getId();
     }
 }
